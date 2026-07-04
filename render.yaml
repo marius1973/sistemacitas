@@ -1,0 +1,30 @@
+# Blueprint de Render: backend + PostgreSQL
+# Docs: https://render.com/docs/blueprint-spec
+databases:
+  - name: citas-db
+    plan: free
+    databaseName: citas_medicas
+    user: citas_user
+
+services:
+  - type: web
+    name: sistema-citas-api
+    runtime: java
+    plan: free
+    rootDir: backend
+    buildCommand: mvn clean package -DskipTests
+    startCommand: java -jar target/sistema-citas-medicas-0.1.0.jar --spring.profiles.active=prod
+    healthCheckPath: /api/especialidades
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: APP_JWT_SECRET
+        generateValue: true
+      - key: APP_CORS_ALLOWED_ORIGINS
+        sync: false
+      - key: APP_SEED_ENABLED
+        value: "true"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: citas-db
+          property: connectionString
