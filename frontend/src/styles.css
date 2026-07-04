@@ -20,3 +20,19 @@ th, td { text-align: left; padding: 8px; border-bottom: 1px solid #e5e7eb; }
 .estado-CANCELADA { background: #fee2e2; color: #991b1b; }
 .estado-REPROGRAMADA { background: #dbeafe; color: #1e40af; }
 .estado-COMPLETADA { background: #e5e7eb; color: #374151; }
+.mensaje-error {
+  color: #b91c1c;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+.mensaje-ok {
+  color: #065f46;
+  background: #d1fae5;
+  border: 1px solid #a7f3d0;
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+button:disabled { opacity: 0.6; cursor: not-allowed; }

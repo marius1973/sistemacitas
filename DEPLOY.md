@@ -94,6 +94,8 @@ Deberias ver las especialidades del seed (Cardiologia, Pediatria, etc.).
 |----------|-------|
 | `VITE_API_URL` | `https://TU-API.onrender.com/api` |
 
+> **Importante:** `VITE_API_URL` se embebe en el build. Despues de crear o cambiar esta variable, debes hacer **Redeploy** en Vercel (Deployments → ⋯ → Redeploy).
+
 5. Deploy. Vercel te dara una URL como `https://tu-app.vercel.app`
 
 ---

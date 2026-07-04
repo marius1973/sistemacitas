@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../../context/AuthContext.jsx'
 import * as citasApi from '../../api/citas'
+import { extraerMensajeError } from '../../api/errors'
 
 export default function ReservarCita() {
   const { usuario } = useAuth()
@@ -11,33 +12,49 @@ export default function ReservarCita() {
   const [medicoId, setMedicoId] = useState('')
   const [fecha, setFecha] = useState('')
   const [mensaje, setMensaje] = useState('')
+  const [error, setError] = useState('')
+  const [cargando, setCargando] = useState(true)
 
   useEffect(() => {
-    citasApi.listarEspecialidades().then(setEspecialidades)
+    setCargando(true)
+    citasApi.listarEspecialidades()
+      .then(setEspecialidades)
+      .catch((err) => setError(extraerMensajeError(err, 'No se pudieron cargar las especialidades')))
+      .finally(() => setCargando(false))
   }, [])
 
   useEffect(() => {
-    if (especialidadId) citasApi.listarMedicos(especialidadId).then(setMedicos)
+    if (!especialidadId) return
+    citasApi.listarMedicos(especialidadId)
+      .then(setMedicos)
+      .catch((err) => setError(extraerMensajeError(err, 'No se pudieron cargar los medicos')))
   }, [especialidadId])
 
   useEffect(() => {
-    if (medicoId && fecha) citasApi.obtenerDisponibilidad(medicoId, fecha).then(setDisponibilidad)
+    if (!medicoId || !fecha) return
+    citasApi.obtenerDisponibilidad(medicoId, fecha)
+      .then(setDisponibilidad)
+      .catch((err) => setError(extraerMensajeError(err, 'No se pudo cargar la disponibilidad')))
   }, [medicoId, fecha])
 
   const reservar = async (horaInicio) => {
     setMensaje('')
+    setError('')
     try {
       await citasApi.reservarCita({ pacienteId: usuario.id, medicoId, fecha, horaInicio })
       setMensaje('Cita reservada correctamente.')
-      citasApi.obtenerDisponibilidad(medicoId, fecha).then(setDisponibilidad)
+      const datos = await citasApi.obtenerDisponibilidad(medicoId, fecha)
+      setDisponibilidad(datos)
     } catch (err) {
-      setMensaje('No se pudo reservar: el horario ya no esta disponible.')
+      setError(extraerMensajeError(err, 'No se pudo reservar la cita'))
     }
   }
 
   return (
     <div className="container">
       <h2>Reservar cita</h2>
+      {error && <p className="mensaje-error">{error}</p>}
+      {cargando && <p>Cargando especialidades...</p>}
       <div className="card">
         <label>Especialidad</label>
         <select value={especialidadId} onChange={(e) => setEspecialidadId(e.target.value)}>
@@ -54,7 +71,7 @@ export default function ReservarCita() {
         <label>Fecha</label>
         <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} disabled={!medicoId} />
 
-        {mensaje && <p>{mensaje}</p>}
+        {mensaje && <p className="mensaje-ok">{mensaje}</p>}
       </div>
 
       {disponibilidad.length > 0 && (

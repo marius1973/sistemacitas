@@ -1,28 +1,27 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { extraerMensajeError } from '../../api/errors'
 import { useAuth } from '../../context/AuthContext.jsx'
 
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [cargando, setCargando] = useState(false)
   const { iniciarSesion } = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    setCargando(true)
     try {
       await iniciarSesion(email.trim().toLowerCase(), password)
       navigate('/')
     } catch (err) {
-      if (!err.response) {
-        setError('No se pudo conectar con el servidor. Revisa que VITE_API_URL apunte al backend en Render.')
-      } else if (err.response.status === 401) {
-        setError('Credenciales invalidas. Usa demo123 como contrasena.')
-      } else {
-        setError(err.response.data?.mensaje || 'Error al iniciar sesion')
-      }
+      setError(extraerMensajeError(err, 'Credenciales invalidas'))
+    } finally {
+      setCargando(false)
     }
   }
 
@@ -32,11 +31,11 @@ export default function Login() {
         <h2>Iniciar sesion</h2>
         <form onSubmit={handleSubmit}>
           <input type="email" placeholder="Email" value={email}
-                 onChange={(e) => setEmail(e.target.value)} required />
+                 onChange={(e) => setEmail(e.target.value)} required disabled={cargando} />
           <input type="password" placeholder="Contrasena" value={password}
-                 onChange={(e) => setPassword(e.target.value)} required />
-          {error && <p style={{ color: '#b91c1c' }}>{error}</p>}
-          <button type="submit">Entrar</button>
+                 onChange={(e) => setPassword(e.target.value)} required disabled={cargando} />
+          {error && <p className="mensaje-error">{error}</p>}
+          <button type="submit" disabled={cargando}>{cargando ? 'Entrando...' : 'Entrar'}</button>
         </form>
         <p>¿No tienes cuenta? <Link to="/registro">Registrate</Link></p>
       </div>

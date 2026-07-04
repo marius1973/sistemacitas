@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { registrarPaciente } from '../../api/auth'
+import { extraerMensajeError } from '../../api/errors'
 import { useAuth } from '../../context/AuthContext.jsx'
 
 export default function Registro() {
   const [form, setForm] = useState({ nombre: '', apellido: '', email: '', password: '', telefono: '' })
   const [error, setError] = useState('')
+  const [cargando, setCargando] = useState(false)
   const { guardarSesion } = useAuth()
   const navigate = useNavigate()
 
@@ -14,19 +16,22 @@ export default function Registro() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    setCargando(true)
     try {
       const data = await registrarPaciente({
         ...form,
         email: form.email.trim().toLowerCase(),
       })
+      if (!data?.token) {
+        setError('El servidor no devolvio una sesion valida.')
+        return
+      }
       guardarSesion(data)
       navigate('/')
     } catch (err) {
-      if (!err.response) {
-        setError('No se pudo conectar con el servidor. Revisa que VITE_API_URL apunte al backend en Render.')
-      } else {
-        setError(err.response.data?.mensaje || 'No se pudo completar el registro')
-      }
+      setError(extraerMensajeError(err, 'No se pudo completar el registro'))
+    } finally {
+      setCargando(false)
     }
   }
 
@@ -35,13 +40,13 @@ export default function Registro() {
       <div className="card" style={{ maxWidth: 420, margin: '40px auto' }}>
         <h2>Registro de paciente</h2>
         <form onSubmit={handleSubmit}>
-          <input placeholder="Nombre" value={form.nombre} onChange={actualizar('nombre')} required />
-          <input placeholder="Apellido" value={form.apellido} onChange={actualizar('apellido')} required />
-          <input type="email" placeholder="Email" value={form.email} onChange={actualizar('email')} required />
-          <input type="password" placeholder="Contrasena" value={form.password} onChange={actualizar('password')} required />
-          <input placeholder="Telefono" value={form.telefono} onChange={actualizar('telefono')} />
-          {error && <p style={{ color: '#b91c1c' }}>{error}</p>}
-          <button type="submit">Crear cuenta</button>
+          <input placeholder="Nombre" value={form.nombre} onChange={actualizar('nombre')} required disabled={cargando} />
+          <input placeholder="Apellido" value={form.apellido} onChange={actualizar('apellido')} required disabled={cargando} />
+          <input type="email" placeholder="Email" value={form.email} onChange={actualizar('email')} required disabled={cargando} />
+          <input type="password" placeholder="Contrasena" value={form.password} onChange={actualizar('password')} required disabled={cargando} />
+          <input placeholder="Telefono" value={form.telefono} onChange={actualizar('telefono')} disabled={cargando} />
+          {error && <p className="mensaje-error">{error}</p>}
+          <button type="submit" disabled={cargando}>{cargando ? 'Registrando...' : 'Crear cuenta'}</button>
         </form>
       </div>
     </div>
