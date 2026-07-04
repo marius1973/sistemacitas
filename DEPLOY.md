@@ -22,7 +22,7 @@ El repositorio debe estar en GitHub (o GitLab) para conectar Render y Vercel.
 2. Conecta el repositorio
 3. Render creara:
    - Base de datos PostgreSQL `citas-db`
-   - Web Service `sistema-citas-api`
+   - Web Service `sistema-citas-api` (via **Docker**, porque Render no tiene runtime Java nativo)
 4. Edita la variable **`APP_CORS_ALLOWED_ORIGINS`** (obligatoria):
    - Valor inicial: `http://localhost:5173`
    - Despues del paso 3 (Vercel), actualizala con la URL real, por ejemplo:
@@ -43,11 +43,12 @@ El repositorio debe estar en GitHub (o GitLab) para conectar Render y Vercel.
 
 | Campo | Valor |
 |-------|-------|
-| Root Directory | `backend` |
-| Runtime | Java |
-| Build Command | `mvn clean package -DskipTests` |
-| Start Command | `java -jar target/sistema-citas-medicas-0.1.0.jar --spring.profiles.active=prod` |
+| Language | **Docker** |
+| Dockerfile Path | `backend/Dockerfile` |
+| Docker Context | `backend` |
 | Health Check Path | `/api/especialidades` |
+
+> No uses `runtime: java` en `render.yaml` — Render no lo soporta. El proyecto usa Docker.
 
 4. Variables de entorno:
 

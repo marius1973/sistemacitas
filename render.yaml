@@ -9,11 +9,10 @@ databases:
 services:
   - type: web
     name: sistema-citas-api
-    runtime: java
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
     plan: free
-    rootDir: backend
-    buildCommand: mvn clean package -DskipTests
-    startCommand: java -jar target/sistema-citas-medicas-0.1.0.jar --spring.profiles.active=prod
     healthCheckPath: /api/especialidades
     envVars:
       - key: SPRING_PROFILES_ACTIVE
