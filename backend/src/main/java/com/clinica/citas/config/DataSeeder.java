@@ -35,38 +35,49 @@ public class DataSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (especialidadRepository.count() > 0) {
+        if (usuarioRepository.existsByEmail("admin@clinica.com")) {
+            log.info("Datos de prueba ya presentes, omitiendo seed.");
             return;
         }
 
-        Especialidad cardiologia = crearEspecialidad("Cardiologia", "Diagnostico y tratamiento de enfermedades del corazon");
-        Especialidad pediatria = crearEspecialidad("Pediatria", "Atencion medica para ninos y adolescentes");
-        Especialidad medicinaGeneral = crearEspecialidad("Medicina General", "Consultas generales y revisiones de salud");
+        log.info("Cargando datos de prueba...");
+        Especialidad cardiologia = obtenerOCrearEspecialidad("Cardiologia", "Diagnostico y tratamiento de enfermedades del corazon");
+        Especialidad pediatria = obtenerOCrearEspecialidad("Pediatria", "Atencion medica para ninos y adolescentes");
+        Especialidad medicinaGeneral = obtenerOCrearEspecialidad("Medicina General", "Consultas generales y revisiones de salud");
 
-        Medico medicoCardiologo = crearMedico(
+        Medico medicoCardiologo = obtenerOCrearMedico(
                 "Carlos", "Mendoza", "medico1@clinica.com", "CMP-10001",
                 cardiologia, "Especialista en cardiologia preventiva");
-        Medico medicoPediatra = crearMedico(
+        Medico medicoPediatra = obtenerOCrearMedico(
                 "Ana", "Ruiz", "medico2@clinica.com", "CMP-10002",
                 pediatria, "Pediatra con enfoque en desarrollo infantil");
-        Medico medicoGeneral = crearMedico(
+        Medico medicoGeneral = obtenerOCrearMedico(
                 "Luis", "Torres", "medico3@clinica.com", "CMP-10003",
                 medicinaGeneral, "Medicina general y chequeos anuales");
 
-        crearHorariosLaborales(medicoCardiologo);
-        crearHorariosLaborales(medicoPediatra);
-        crearHorariosLaborales(medicoGeneral);
+        if (horarioRepository.count() == 0) {
+            crearHorariosLaborales(medicoCardiologo);
+            crearHorariosLaborales(medicoPediatra);
+            crearHorariosLaborales(medicoGeneral);
+        }
 
-        crearPaciente("Juan", "Perez", "paciente@clinica.com", "45678901",
+        obtenerOCrearPaciente("Juan", "Perez", "paciente@clinica.com", "45678901",
                 LocalDate.of(1990, 5, 15), "Masculino", "Av. Salud 123");
-        crearPaciente("Maria", "Gomez", "paciente2@clinica.com", "45678902",
+        obtenerOCrearPaciente("Maria", "Gomez", "paciente2@clinica.com", "45678902",
                 LocalDate.of(1985, 8, 22), "Femenino", "Calle Bienestar 456");
 
-        crearUsuario("Roberto", "Silva", "recepcion@clinica.com", Rol.RECEPCIONISTA);
-        crearUsuario("Patricia", "Vega", "admin@clinica.com", Rol.ADMINISTRADOR);
+        obtenerOCrearUsuario("Roberto", "Silva", "recepcion@clinica.com", Rol.RECEPCIONISTA);
+        obtenerOCrearUsuario("Patricia", "Vega", "admin@clinica.com", Rol.ADMINISTRADOR);
 
         log.info("Datos de prueba cargados. Contrasena para todos los usuarios: {}", PASSWORD_DEMO);
         log.info("Paciente: paciente@clinica.com | Medico: medico1@clinica.com | Recepcion: recepcion@clinica.com | Admin: admin@clinica.com");
+    }
+
+    private Especialidad obtenerOCrearEspecialidad(String nombre, String descripcion) {
+        return especialidadRepository.findAll().stream()
+                .filter(e -> nombre.equals(e.getNombre()))
+                .findFirst()
+                .orElseGet(() -> crearEspecialidad(nombre, descripcion));
     }
 
     private Especialidad crearEspecialidad(String nombre, String descripcion) {
@@ -74,6 +85,14 @@ public class DataSeeder implements CommandLineRunner {
         especialidad.setNombre(nombre);
         especialidad.setDescripcion(descripcion);
         return especialidadRepository.save(especialidad);
+    }
+
+    private Medico obtenerOCrearMedico(String nombre, String apellido, String email, String colegiado,
+                                     Especialidad especialidad, String biografia) {
+        return medicoRepository.findAll().stream()
+                .filter(m -> email.equals(m.getEmail()))
+                .findFirst()
+                .orElseGet(() -> crearMedico(nombre, apellido, email, colegiado, especialidad, biografia));
     }
 
     private Medico crearMedico(String nombre, String apellido, String email, String colegiado,
@@ -113,6 +132,14 @@ public class DataSeeder implements CommandLineRunner {
         horarioRepository.save(horario);
     }
 
+    private Paciente obtenerOCrearPaciente(String nombre, String apellido, String email, String documento,
+                                           LocalDate fechaNacimiento, String genero, String direccion) {
+        return pacienteRepository.findAll().stream()
+                .filter(p -> email.equals(p.getEmail()))
+                .findFirst()
+                .orElseGet(() -> crearPaciente(nombre, apellido, email, documento, fechaNacimiento, genero, direccion));
+    }
+
     private Paciente crearPaciente(String nombre, String apellido, String email, String documento,
                                    LocalDate fechaNacimiento, String genero, String direccion) {
         Paciente paciente = new Paciente();
@@ -127,6 +154,12 @@ public class DataSeeder implements CommandLineRunner {
         paciente.setGenero(genero);
         paciente.setDireccion(direccion);
         return pacienteRepository.save(paciente);
+    }
+
+    private void obtenerOCrearUsuario(String nombre, String apellido, String email, Rol rol) {
+        if (!usuarioRepository.existsByEmail(email)) {
+            crearUsuario(nombre, apellido, email, rol);
+        }
     }
 
     private void crearUsuario(String nombre, String apellido, String email, Rol rol) {

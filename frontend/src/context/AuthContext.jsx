@@ -9,13 +9,17 @@ export function AuthProvider({ children }) {
     return guardado ? JSON.parse(guardado) : null
   })
 
-  const iniciarSesion = async (email, password) => {
-    const data = await authApi.login(email, password)
+  const guardarSesion = (data) => {
     const usuarioActual = { id: data.usuarioId, nombre: data.nombre, rol: data.rol }
     localStorage.setItem('token', data.token)
     localStorage.setItem('usuario', JSON.stringify(usuarioActual))
     setUsuario(usuarioActual)
     return usuarioActual
+  }
+
+  const iniciarSesion = async (email, password) => {
+    const data = await authApi.login(email, password)
+    return guardarSesion(data)
   }
 
   const cerrarSesion = () => {
@@ -25,7 +29,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ usuario, iniciarSesion, cerrarSesion }}>
+    <AuthContext.Provider value={{ usuario, iniciarSesion, guardarSesion, cerrarSesion }}>
       {children}
     </AuthContext.Provider>
   )

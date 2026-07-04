@@ -28,6 +28,7 @@ public class AuthService {
     private final com.clinica.citas.security.UsuarioDetailsServiceImpl usuarioDetailsService;
 
     public AuthResponse registrarPaciente(RegistroPacienteRequest req) {
+        req.setEmail(normalizarEmail(req.getEmail()));
         if (usuarioRepository.existsByEmail(req.getEmail())) {
             throw new IllegalArgumentException("El email ya esta registrado");
         }
@@ -49,6 +50,7 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest req) {
+        req.setEmail(normalizarEmail(req.getEmail()));
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword()));
 
@@ -58,5 +60,9 @@ public class AuthService {
         UserDetails userDetails = usuarioDetailsService.loadUserByUsername(req.getEmail());
         String token = jwtService.generarToken(userDetails);
         return new AuthResponse(token, usuario.getRol().name(), usuario.getId(), usuario.getNombre());
+    }
+
+    private String normalizarEmail(String email) {
+        return email == null ? null : email.trim().toLowerCase();
     }
 }

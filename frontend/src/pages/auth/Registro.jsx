@@ -6,7 +6,7 @@ import { useAuth } from '../../context/AuthContext.jsx'
 export default function Registro() {
   const [form, setForm] = useState({ nombre: '', apellido: '', email: '', password: '', telefono: '' })
   const [error, setError] = useState('')
-  const { iniciarSesion } = useAuth()
+  const { guardarSesion } = useAuth()
   const navigate = useNavigate()
 
   const actualizar = (campo) => (e) => setForm({ ...form, [campo]: e.target.value })
@@ -15,11 +15,18 @@ export default function Registro() {
     e.preventDefault()
     setError('')
     try {
-      await registrarPaciente(form)
-      await iniciarSesion(form.email, form.password)
+      const data = await registrarPaciente({
+        ...form,
+        email: form.email.trim().toLowerCase(),
+      })
+      guardarSesion(data)
       navigate('/')
     } catch (err) {
-      setError('No se pudo completar el registro')
+      if (!err.response) {
+        setError('No se pudo conectar con el servidor. Revisa que VITE_API_URL apunte al backend en Render.')
+      } else {
+        setError(err.response.data?.mensaje || 'No se pudo completar el registro')
+      }
     }
   }
 

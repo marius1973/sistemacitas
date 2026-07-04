@@ -13,10 +13,16 @@ export default function Login() {
     e.preventDefault()
     setError('')
     try {
-      await iniciarSesion(email, password)
+      await iniciarSesion(email.trim().toLowerCase(), password)
       navigate('/')
     } catch (err) {
-      setError('Credenciales invalidas')
+      if (!err.response) {
+        setError('No se pudo conectar con el servidor. Revisa que VITE_API_URL apunte al backend en Render.')
+      } else if (err.response.status === 401) {
+        setError('Credenciales invalidas. Usa demo123 como contrasena.')
+      } else {
+        setError(err.response.data?.mensaje || 'Error al iniciar sesion')
+      }
     }
   }
 
