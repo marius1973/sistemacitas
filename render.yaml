@@ -20,7 +20,7 @@ services:
       - key: APP_JWT_SECRET
         generateValue: true
       - key: APP_CORS_ALLOWED_ORIGINS
-        sync: false
+        value: "https://sistemacitas.vercel.app,http://localhost:5173"
       - key: APP_SEED_ENABLED
         value: "true"
       - key: DATABASE_URL

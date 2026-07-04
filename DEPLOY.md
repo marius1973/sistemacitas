@@ -88,15 +88,27 @@ Deberias ver las especialidades del seed (Cardiologia, Pediatria, etc.).
 | Build Command | `npm run build` |
 | Output Directory | `dist` |
 
-4. Variable de entorno:
+### Conectar frontend con backend (elige una opcion)
+
+**Opcion A — Proxy en vercel.json (recomendada, sin CORS)**
+
+Edita `frontend/vercel.json` y pon tu URL real de Render:
+
+```json
+"destination": "https://TU-SERVICIO.onrender.com/api/:path*"
+```
+
+Con esto el frontend usa `/api` y Vercel reenvia las peticiones al backend. **No necesitas** `VITE_API_URL`.
+
+**Opcion B — Variable VITE_API_URL**
 
 | Variable | Valor |
 |----------|-------|
 | `VITE_API_URL` | `https://TU-API.onrender.com/api` |
 
-> **Importante:** `VITE_API_URL` se embebe en el build. Despues de crear o cambiar esta variable, debes hacer **Redeploy** en Vercel (Deployments → ⋯ → Redeploy).
+> Tras crear o cambiar esta variable, haz **Redeploy** en Vercel.
 
-5. Deploy. Vercel te dara una URL como `https://tu-app.vercel.app`
+4. Deploy. Vercel te dara una URL como `https://tu-app.vercel.app`
 
 ---
 
