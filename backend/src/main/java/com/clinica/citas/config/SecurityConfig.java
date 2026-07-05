@@ -75,7 +75,7 @@ public class SecurityConfig {
             .cors(cors -> {})
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/h2-console/**").permitAll()
+                .requestMatchers("/api/auth/**", "/api/health", "/h2-console/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/especialidades/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/especialidades/**").hasRole("ADMINISTRADOR")
                 .requestMatchers("/api/medicos/**").hasAnyRole("PACIENTE", "RECEPCIONISTA", "ADMINISTRADOR", "MEDICO")
