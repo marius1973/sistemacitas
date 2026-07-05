@@ -100,13 +100,15 @@ Edita `frontend/vercel.json` y pon tu URL real de Render:
 
 Con esto el frontend usa `/api` y Vercel reenvia las peticiones al backend. **No necesitas** `VITE_API_URL`.
 
-**Opcion B — Variable VITE_API_URL**
+**Opcion B — Variable VITE_API_URL en Vercel**
 
 | Variable | Valor |
 |----------|-------|
-| `VITE_API_URL` | `https://TU-API.onrender.com/api` |
+| `VITE_API_URL` | `https://sistema-citas-api.onrender.com/api` |
 
-> Tras crear o cambiar esta variable, haz **Redeploy** en Vercel.
+> Si la variable esta mal (ej. apunta a vercel.app), borrala. El archivo `frontend/.env.production` ya trae la URL correcta.
+
+> Tras cualquier cambio, haz **Redeploy** en Vercel.
 
 4. Deploy. Vercel te dara una URL como `https://tu-app.vercel.app`
 

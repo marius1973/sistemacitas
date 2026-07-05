@@ -5,7 +5,7 @@ export function extraerMensajeError(err, fallback) {
   }
 
   if (err.response.status === 405) {
-    return 'Error de configuracion (HTTP 405): el login no llega al backend. Actualiza la URL de Render en frontend/vercel.json o configura VITE_API_URL y redeploy.'
+    return 'Error HTTP 405: el registro/login no llega al backend en Render. Redeploy en Vercel y verifica que VITE_API_URL sea https://sistema-citas-api.onrender.com/api (o elimina esa variable en Vercel para usar .env.production).'
   }
 
   const data = err.response.data
