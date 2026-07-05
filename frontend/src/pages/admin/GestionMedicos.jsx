@@ -77,10 +77,13 @@ export default function GestionMedicos() {
 
   const toggleActivo = async (m) => {
     setError('')
+    setMensaje('')
     try {
-      if (m.activo) await medicosApi.desactivarMedico(m.id)
-      else await medicosApi.activarMedico(m.id)
-      cargar()
+      const updated = m.activo !== false
+        ? await medicosApi.desactivarMedico(m.id)
+        : await medicosApi.activarMedico(m.id)
+      setMedicos((prev) => prev.map((x) => (x.id === updated.id ? updated : x)))
+      setMensaje(updated.activo ? 'Medico activado.' : 'Medico desactivado.')
     } catch (err) {
       setError(extraerMensajeError(err, 'No se pudo cambiar el estado'))
     }
@@ -135,14 +138,15 @@ export default function GestionMedicos() {
                 <td>{m.especialidadNombre}</td>
                 <td>{m.numeroColegiado}</td>
                 <td>
-                  <span className={`estado ${m.activo ? 'estado-CONFIRMADA' : 'estado-CANCELADA'}`}>
-                    {m.activo ? 'Activo' : 'Inactivo'}
+                  <span className={`estado ${m.activo !== false ? 'estado-CONFIRMADA' : 'estado-CANCELADA'}`}>
+                    {m.activo !== false ? 'Activo' : 'Inactivo'}
                   </span>
                 </td>
                 <td style={{ display: 'flex', gap: 4 }}>
-                  <button onClick={() => editar(m)}>Editar</button>
-                  <button onClick={() => toggleActivo(m)} style={{ background: m.activo ? '#dc2626' : '#059669' }}>
-                    {m.activo ? 'Desactivar' : 'Activar'}
+                  <button type="button" onClick={() => editar(m)}>Editar</button>
+                  <button type="button" onClick={() => toggleActivo(m)}
+                          style={{ background: m.activo !== false ? '#dc2626' : '#059669' }}>
+                    {m.activo !== false ? 'Desactivar' : 'Activar'}
                   </button>
                 </td>
               </tr>

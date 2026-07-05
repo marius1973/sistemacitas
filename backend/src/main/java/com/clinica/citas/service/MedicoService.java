@@ -9,6 +9,7 @@ import com.clinica.citas.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -65,16 +66,26 @@ public class MedicoService {
         return mapearRespuesta(medicoRepository.save(medico));
     }
 
+    @Transactional
     public MedicoResponse desactivar(Long id) {
-        Medico medico = obtenerEntidad(id);
-        medico.setActivo(false);
-        return mapearRespuesta(medicoRepository.save(medico));
+        obtenerEntidad(id);
+        var usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Medico no encontrado: " + id));
+        usuario.setActivo(false);
+        usuarioRepository.saveAndFlush(usuario);
+        medicoRepository.flush();
+        return mapearRespuesta(obtenerEntidad(id));
     }
 
+    @Transactional
     public MedicoResponse activar(Long id) {
-        Medico medico = obtenerEntidad(id);
-        medico.setActivo(true);
-        return mapearRespuesta(medicoRepository.save(medico));
+        obtenerEntidad(id);
+        var usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Medico no encontrado: " + id));
+        usuario.setActivo(true);
+        usuarioRepository.saveAndFlush(usuario);
+        medicoRepository.flush();
+        return mapearRespuesta(obtenerEntidad(id));
     }
 
     public Medico obtenerEntidad(Long id) {

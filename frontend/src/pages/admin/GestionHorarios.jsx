@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import * as citasApi from '../../api/citas'
+import * as medicosApi from '../../api/medicos'
 import * as horariosApi from '../../api/horarios'
 import { extraerMensajeError } from '../../api/errors'
 
@@ -30,7 +30,7 @@ export default function GestionHorarios() {
   const [cargando, setCargando] = useState(false)
 
   useEffect(() => {
-    citasApi.listarMedicos()
+    medicosApi.listarMedicos()
       .then(setMedicos)
       .catch((err) => setError(extraerMensajeError(err, 'No se pudieron cargar los medicos')))
   }, [])
@@ -49,12 +49,31 @@ export default function GestionHorarios() {
 
   const actualizar = (campo) => (e) => setForm({ ...form, [campo]: e.target.value })
 
+  const validarFormulario = () => {
+    if (!medicoId) {
+      setError('Seleccione un medico antes de agregar el horario')
+      return false
+    }
+    if (form.horaFin <= form.horaInicio) {
+      setError('La hora de fin debe ser posterior a la hora de inicio')
+      return false
+    }
+    const duracion = Number(form.duracionCitaMinutos)
+    if (!duracion || duracion < 15 || duracion > 120) {
+      setError('La duracion de la cita debe estar entre 15 y 120 minutos')
+      return false
+    }
+    return true
+  }
+
   const crear = async (e) => {
     e.preventDefault()
     setError('')
     setMensaje('')
+    if (!validarFormulario()) return
+    setCargando(true)
     try {
-      await horariosApi.crearHorario({
+      const nuevo = await horariosApi.crearHorario({
         medicoId: Number(medicoId),
         diaSemana: form.diaSemana,
         horaInicio: form.horaInicio,
@@ -62,9 +81,11 @@ export default function GestionHorarios() {
         duracionCitaMinutos: Number(form.duracionCitaMinutos),
       })
       setMensaje('Horario agregado correctamente.')
-      cargarHorarios(medicoId)
+      setHorarios((prev) => [...prev, nuevo])
     } catch (err) {
       setError(extraerMensajeError(err, 'No se pudo crear el horario'))
+    } finally {
+      setCargando(false)
     }
   }
 
@@ -123,7 +144,9 @@ export default function GestionHorarios() {
               <input type="number" min="15" max="120" step="15"
                      value={form.duracionCitaMinutos} onChange={actualizar('duracionCitaMinutos')} required />
 
-              <button type="submit">Agregar horario</button>
+              <button type="submit" disabled={cargando}>
+                {cargando ? 'Guardando...' : 'Agregar horario'}
+              </button>
             </form>
           </div>
 
@@ -142,8 +165,8 @@ export default function GestionHorarios() {
                   {horarios.map((h) => (
                     <tr key={h.id}>
                       <td>{etiquetaDia(h.diaSemana)}</td>
-                      <td>{h.horaInicio}</td>
-                      <td>{h.horaFin}</td>
+                      <td>{String(h.horaInicio).slice(0, 5)}</td>
+                      <td>{String(h.horaFin).slice(0, 5)}</td>
                       <td>{h.duracionCitaMinutos} min</td>
                       <td>
                         <span className={`estado ${h.activo ? 'estado-CONFIRMADA' : 'estado-CANCELADA'}`}>

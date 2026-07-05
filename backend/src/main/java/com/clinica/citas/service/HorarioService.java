@@ -29,7 +29,7 @@ public class HorarioService {
     private final SecurityContextHelper securityContextHelper;
 
     public HorarioResponse crear(HorarioRequest req) {
-        verificarGestionHorarios(null);
+        verificarGestionHorarios(req.getMedicoId());
 
         if (!req.getHoraFin().isAfter(req.getHoraInicio())) {
             throw new ConflictoDeHorarioException("La hora de fin debe ser posterior a la hora de inicio");

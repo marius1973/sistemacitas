@@ -1,5 +1,6 @@
 package com.clinica.citas.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -15,5 +16,6 @@ public class MedicoResponse {
     private Long especialidadId;
     private String especialidadNombre;
     private String biografia;
+    @JsonProperty("activo")
     private boolean activo;
 }
