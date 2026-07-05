@@ -1,7 +1,9 @@
 package com.clinica.citas.controller;
 
-import com.clinica.citas.model.HistorialClinico;
-import com.clinica.citas.repository.HistorialClinicoRepository;
+import com.clinica.citas.dto.HistorialClinicoRequest;
+import com.clinica.citas.dto.HistorialClinicoResponse;
+import com.clinica.citas.service.HistorialClinicoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,15 +15,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HistorialClinicoController {
 
-    private final HistorialClinicoRepository historialClinicoRepository;
+    private final HistorialClinicoService historialClinicoService;
 
-    @PostMapping
-    public ResponseEntity<HistorialClinico> crear(@RequestBody HistorialClinico historial) {
-        return ResponseEntity.ok(historialClinicoRepository.save(historial));
+    @PostMapping("/cita/{citaId}")
+    public ResponseEntity<HistorialClinicoResponse> registrarDesdeCita(
+            @PathVariable Long citaId,
+            @Valid @RequestBody HistorialClinicoRequest req) {
+        return ResponseEntity.ok(historialClinicoService.registrarDesdeCita(citaId, req));
     }
 
     @GetMapping("/paciente/{pacienteId}")
-    public ResponseEntity<List<HistorialClinico>> listarPorPaciente(@PathVariable Long pacienteId) {
-        return ResponseEntity.ok(historialClinicoRepository.findByPacienteIdOrderByFechaDesc(pacienteId));
+    public ResponseEntity<List<HistorialClinicoResponse>> listarPorPaciente(@PathVariable Long pacienteId) {
+        return ResponseEntity.ok(historialClinicoService.listarPorPaciente(pacienteId));
     }
 }

@@ -12,6 +12,8 @@ nav a { color: #fff; text-decoration: none; font-weight: 500; }
 button { background: #0f766e; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
 button:hover { background: #0d5f58; }
 input, select { padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; width: 100%; margin-bottom: 10px; }
+textarea { padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; width: 100%; margin-bottom: 10px; font-family: inherit; resize: vertical; }
+label { display: block; font-weight: 500; margin-bottom: 4px; font-size: 14px; }
 table { width: 100%; border-collapse: collapse; }
 th, td { text-align: left; padding: 8px; border-bottom: 1px solid #e5e7eb; }
 .estado { padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: 600; }

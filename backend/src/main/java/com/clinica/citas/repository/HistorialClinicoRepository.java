@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface HistorialClinicoRepository extends JpaRepository<HistorialClinico, Long> {
     List<HistorialClinico> findByPacienteIdOrderByFechaDesc(Long pacienteId);
+    boolean existsByCitaId(Long citaId);
 }
