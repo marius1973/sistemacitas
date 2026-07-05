@@ -62,7 +62,7 @@ El repositorio debe estar en GitHub (o GitLab) para conectar Render y Vercel.
 
 5. Deploy. La URL del API sera algo como:
    ```
-   https://sistema-citas-api.onrender.com
+   https://sistema-citas-api-i0eh.onrender.com/api/especialidades
    ```
 
 ### Verificar backend
@@ -104,7 +104,7 @@ Con esto el frontend usa `/api` y Vercel reenvia las peticiones al backend. **No
 
 | Variable | Valor |
 |----------|-------|
-| `VITE_API_URL` | `https://sistema-citas-api.onrender.com/api` |
+| `VITE_API_URL` | `https://sistema-citas-api-i0eh.onrender.com/api` |
 
 > Si la variable esta mal (ej. apunta a vercel.app), borrala. El archivo `frontend/.env.production` ya trae la URL correcta.
 
