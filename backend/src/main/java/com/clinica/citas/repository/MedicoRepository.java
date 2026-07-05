@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface MedicoRepository extends JpaRepository<Medico, Long> {
     List<Medico> findByEspecialidadId(Long especialidadId);
+    List<Medico> findByEspecialidadIdAndActivoTrue(Long especialidadId);
+    boolean existsByNumeroColegiado(String numeroColegiado);
 }

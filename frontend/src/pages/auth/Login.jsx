@@ -50,6 +50,7 @@ export default function Login() {
           <button type="submit" disabled={cargando}>{cargando ? 'Entrando...' : 'Entrar'}</button>
         </form>
         <p>¿No tienes cuenta? <Link to="/registro">Registrate</Link></p>
+        <p><Link to="/recuperar-contrasena">¿Olvidaste tu contrasena?</Link></p>
       </div>
     </div>
   )

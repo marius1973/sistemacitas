@@ -1,7 +1,6 @@
 package com.clinica.citas.controller;
 
-import com.clinica.citas.dto.CitaRequest;
-import com.clinica.citas.dto.CitaResponse;
+import com.clinica.citas.dto.*;
 import com.clinica.citas.service.CitaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +29,15 @@ public class CitaController {
     }
 
     @PatchMapping("/{id}/reprogramar")
-    public ResponseEntity<CitaResponse> reprogramar(@PathVariable Long id, @Valid @RequestBody CitaRequest req) {
+    public ResponseEntity<CitaResponse> reprogramar(
+            @PathVariable Long id, @Valid @RequestBody ReprogramarCitaRequest req) {
         return ResponseEntity.ok(citaService.reprogramar(id, req));
+    }
+
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<CitaResponse> cambiarEstado(
+            @PathVariable Long id, @Valid @RequestBody CambiarEstadoRequest req) {
+        return ResponseEntity.ok(citaService.cambiarEstado(id, req.getEstado()));
     }
 
     @GetMapping("/mis-citas")

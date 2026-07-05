@@ -15,4 +15,5 @@ public class MedicoResponse {
     private Long especialidadId;
     private String especialidadNombre;
     private String biografia;
+    private boolean activo;
 }

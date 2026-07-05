@@ -18,6 +18,9 @@ export const cancelarCita = (id) =>
 export const reprogramarCita = (id, datos) =>
   client.patch(`/citas/${id}/reprogramar`, datos).then((r) => r.data)
 
+export const cambiarEstadoCita = (id, estado) =>
+  client.patch(`/citas/${id}/estado`, { estado }).then((r) => r.data)
+
 export const listarMisCitas = () =>
   client.get('/citas/mis-citas').then((r) => r.data)
 

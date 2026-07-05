@@ -1,5 +1,6 @@
 package com.clinica.citas.service;
 
+import com.clinica.citas.dto.EspecialidadRequest;
 import com.clinica.citas.dto.EspecialidadResponse;
 import com.clinica.citas.exception.RecursoNoEncontradoException;
 import com.clinica.citas.model.Especialidad;
@@ -19,7 +20,10 @@ public class EspecialidadService {
         return especialidadRepository.findAll().stream().map(this::mapearRespuesta).toList();
     }
 
-    public EspecialidadResponse crear(Especialidad especialidad) {
+    public EspecialidadResponse crear(EspecialidadRequest req) {
+        Especialidad especialidad = new Especialidad();
+        especialidad.setNombre(req.getNombre().trim());
+        especialidad.setDescripcion(req.getDescripcion());
         return mapearRespuesta(especialidadRepository.save(especialidad));
     }
 

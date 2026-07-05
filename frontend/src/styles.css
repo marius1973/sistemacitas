@@ -6,8 +6,18 @@ body {
   color: #1f2937;
 }
 .container { max-width: 960px; margin: 0 auto; padding: 24px; }
+.site-header { background: #0f766e; }
+.site-banner {
+  background: #115e59;
+  color: #fff;
+  text-align: center;
+  padding: 14px 24px;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
 .card { background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,.08); margin-bottom: 16px; }
-nav { background: #0f766e; padding: 12px 24px; display: flex; gap: 16px; }
+nav { padding: 12px 24px; display: flex; gap: 16px; align-items: center; }
 nav a { color: #fff; text-decoration: none; font-weight: 500; }
 button { background: #0f766e; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
 button:hover { background: #0d5f58; }
@@ -22,6 +32,7 @@ th, td { text-align: left; padding: 8px; border-bottom: 1px solid #e5e7eb; }
 .estado-CANCELADA { background: #fee2e2; color: #991b1b; }
 .estado-REPROGRAMADA { background: #dbeafe; color: #1e40af; }
 .estado-COMPLETADA { background: #e5e7eb; color: #374151; }
+.estado-NO_ASISTIO { background: #fce7f3; color: #9d174d; }
 .mensaje-error {
   color: #b91c1c;
   background: #fee2e2;

@@ -3,6 +3,7 @@ package com.clinica.citas.service;
 import com.clinica.citas.dto.CitaRequest;
 import com.clinica.citas.dto.CitaResponse;
 import com.clinica.citas.dto.DisponibilidadResponse;
+import com.clinica.citas.dto.ReprogramarCitaRequest;
 import com.clinica.citas.exception.RecursoNoEncontradoException;
 import com.clinica.citas.model.*;
 import com.clinica.citas.exception.AccesoDenegadoException;
@@ -66,9 +67,9 @@ public class CitaService {
         return mapearRespuesta(actualizada);
     }
 
-    public CitaResponse reprogramar(Long citaId, CitaRequest req) {
+    public CitaResponse reprogramar(Long citaId, ReprogramarCitaRequest req) {
         Cita cita = obtenerEntidad(citaId);
-        verificarReprogramacion(cita, req);
+        verificarReprogramacion(cita);
 
         DisponibilidadResponse slot = horarioService.validarSlotDisponible(
                 cita.getMedico().getId(), req.getFecha(), req.getHoraInicio(), citaId);
@@ -81,6 +82,40 @@ public class CitaService {
         notificacionService.crear(cita.getPaciente(), TipoNotificacion.REPROGRAMACION_CITA,
                 "Su cita fue reprogramada para el " + req.getFecha() + " a las " + req.getHoraInicio() + ".",
                 CanalNotificacion.EMAIL);
+        return mapearRespuesta(actualizada);
+    }
+
+    public CitaResponse cambiarEstado(Long citaId, EstadoCita nuevoEstado) {
+        if (nuevoEstado != EstadoCita.CONFIRMADA && nuevoEstado != EstadoCita.NO_ASISTIO) {
+            throw new IllegalArgumentException("Solo se permiten los estados CONFIRMADA y NO_ASISTIO");
+        }
+
+        Cita cita = obtenerEntidad(citaId);
+        verificarCambioEstado(cita);
+
+        if (nuevoEstado == EstadoCita.CONFIRMADA
+                && cita.getEstado() != EstadoCita.PENDIENTE
+                && cita.getEstado() != EstadoCita.REPROGRAMADA) {
+            throw new IllegalArgumentException("Solo se puede confirmar una cita pendiente o reprogramada");
+        }
+        if (nuevoEstado == EstadoCita.NO_ASISTIO
+                && cita.getEstado() != EstadoCita.PENDIENTE
+                && cita.getEstado() != EstadoCita.CONFIRMADA
+                && cita.getEstado() != EstadoCita.REPROGRAMADA) {
+            throw new IllegalArgumentException("No se puede marcar no asistio en el estado actual");
+        }
+
+        cita.setEstado(nuevoEstado);
+        Cita actualizada = citaRepository.save(cita);
+
+        String mensaje = nuevoEstado == EstadoCita.CONFIRMADA
+                ? "Su cita del " + cita.getFecha() + " a las " + cita.getHoraInicio() + " ha sido confirmada."
+                : "Se registro que no asistio a su cita del " + cita.getFecha() + ".";
+        TipoNotificacion tipo = nuevoEstado == EstadoCita.CONFIRMADA
+                ? TipoNotificacion.CONFIRMACION_CITA
+                : TipoNotificacion.CANCELACION_CITA;
+        notificacionService.crear(cita.getPaciente(), tipo, mensaje, CanalNotificacion.EMAIL);
+
         return mapearRespuesta(actualizada);
     }
 
@@ -153,18 +188,32 @@ public class CitaService {
         }
     }
 
-    private void verificarReprogramacion(Cita cita, CitaRequest req) {
+    private void verificarReprogramacion(Cita cita) {
         Usuario actual = securityContextHelper.obtenerUsuarioActual();
         switch (actual.getRol()) {
             case PACIENTE -> {
                 if (!actual.getId().equals(cita.getPaciente().getId())) {
                     throw new AccesoDenegadoException("No puede reprogramar citas de otro paciente");
                 }
-                if (req.getPacienteId() != null && !actual.getId().equals(req.getPacienteId())) {
-                    throw new AccesoDenegadoException("No puede asignar la cita a otro paciente");
-                }
             }
             case MEDICO -> throw new AccesoDenegadoException("Los medicos no pueden reprogramar citas");
+            case RECEPCIONISTA, ADMINISTRADOR -> { /* acceso total */ }
+        }
+        if (cita.getEstado() == EstadoCita.CANCELADA || cita.getEstado() == EstadoCita.COMPLETADA
+                || cita.getEstado() == EstadoCita.NO_ASISTIO) {
+            throw new IllegalArgumentException("No se puede reprogramar una cita en estado " + cita.getEstado());
+        }
+    }
+
+    private void verificarCambioEstado(Cita cita) {
+        Usuario actual = securityContextHelper.obtenerUsuarioActual();
+        switch (actual.getRol()) {
+            case PACIENTE -> throw new AccesoDenegadoException("Los pacientes no pueden cambiar el estado de la cita");
+            case MEDICO -> {
+                if (!actual.getId().equals(cita.getMedico().getId())) {
+                    throw new AccesoDenegadoException("No puede cambiar el estado de citas de otro medico");
+                }
+            }
             case RECEPCIONISTA, ADMINISTRADOR -> { /* acceso total */ }
         }
     }

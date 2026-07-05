@@ -28,6 +28,16 @@ export default function AgendaDelDia() {
 
   useEffect(() => { cargar() }, [fecha])
 
+  const cambiarEstado = async (citaId, estado) => {
+    setError('')
+    try {
+      await citasApi.cambiarEstadoCita(citaId, estado)
+      cargar()
+    } catch (err) {
+      setError(extraerMensajeError(err, 'No se pudo cambiar el estado'))
+    }
+  }
+
   const abrirAtencion = (cita) => {
     setCitaSeleccionada(cita)
     setForm({ diagnostico: '', tratamiento: '', notas: '' })
@@ -90,9 +100,19 @@ export default function AgendaDelDia() {
                   <td>{c.motivo || '—'}</td>
                   <td><span className={`estado estado-${c.estado}`}>{c.estado}</span></td>
                   <td>
-                    {ESTADOS_ATENDIBLES.includes(c.estado) && (
-                      <button onClick={() => abrirAtencion(c)}>Atender</button>
-                    )}
+                    <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                      {['PENDIENTE', 'REPROGRAMADA'].includes(c.estado) && (
+                        <button onClick={() => cambiarEstado(c.id, 'CONFIRMADA')}>Confirmar</button>
+                      )}
+                      {['PENDIENTE', 'CONFIRMADA', 'REPROGRAMADA'].includes(c.estado) && (
+                        <button onClick={() => cambiarEstado(c.id, 'NO_ASISTIO')} style={{ background: '#6b7280' }}>
+                          No asistio
+                        </button>
+                      )}
+                      {ESTADOS_ATENDIBLES.includes(c.estado) && (
+                        <button onClick={() => abrirAtencion(c)}>Atender</button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}

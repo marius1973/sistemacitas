@@ -1,8 +1,9 @@
 package com.clinica.citas.controller;
 
+import com.clinica.citas.dto.EspecialidadRequest;
 import com.clinica.citas.dto.EspecialidadResponse;
-import com.clinica.citas.model.Especialidad;
 import com.clinica.citas.service.EspecialidadService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,7 @@ public class EspecialidadController {
     }
 
     @PostMapping
-    public ResponseEntity<EspecialidadResponse> crear(@RequestBody Especialidad especialidad) {
-        return ResponseEntity.ok(especialidadService.crear(especialidad));
+    public ResponseEntity<EspecialidadResponse> crear(@Valid @RequestBody EspecialidadRequest req) {
+        return ResponseEntity.ok(especialidadService.crear(req));
     }
 }
