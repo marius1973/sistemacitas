@@ -57,7 +57,7 @@ export default function App() {
           <RutaPrivada roles={['ADMINISTRADOR']}><GestionUsuarios /></RutaPrivada>
         } />
         <Route path="/horarios" element={
-          <RutaPrivada roles={['ADMINISTRADOR', 'RECEPCIONISTA']}><GestionHorarios /></RutaPrivada>
+          <RutaPrivada roles={['MEDICO', 'ADMINISTRADOR', 'RECEPCIONISTA']}><GestionHorarios /></RutaPrivada>
         } />
         <Route path="/reportes" element={
           <RutaPrivada roles={['RECEPCIONISTA', 'ADMINISTRADOR']}><Reportes /></RutaPrivada>

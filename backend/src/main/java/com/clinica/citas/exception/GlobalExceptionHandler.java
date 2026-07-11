@@ -1,5 +1,6 @@
 package com.clinica.citas.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
@@ -41,6 +42,16 @@ public class GlobalExceptionHandler {
                 .reduce((a, b) -> a + "; " + b)
                 .orElse("Error de validacion");
         return construirRespuesta(HttpStatus.BAD_REQUEST, mensaje);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleIntegridad(DataIntegrityViolationException ex) {
+        String detalle = ex.getMostSpecificCause() != null ? ex.getMostSpecificCause().getMessage() : ex.getMessage();
+        if (detalle != null && detalle.contains("medico_id")) {
+            return construirRespuesta(HttpStatus.BAD_REQUEST,
+                    "Debe seleccionar un medico valido para crear el horario");
+        }
+        return construirRespuesta(HttpStatus.CONFLICT, "Conflicto de datos: " + detalle);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

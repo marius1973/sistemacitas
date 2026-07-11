@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import * as medicosApi from '../../api/medicos'
 import * as horariosApi from '../../api/horarios'
 import { extraerMensajeError } from '../../api/errors'
+import { useAuth } from '../../context/AuthContext.jsx'
 
 const DIAS = [
   { value: 'MONDAY', label: 'Lunes' },
@@ -16,8 +17,10 @@ const DIAS = [
 const etiquetaDia = (valor) => DIAS.find((d) => d.value === valor)?.label || valor
 
 export default function GestionHorarios() {
+  const { usuario } = useAuth()
+  const esMedico = usuario?.rol === 'MEDICO'
   const [medicos, setMedicos] = useState([])
-  const [medicoId, setMedicoId] = useState('')
+  const [medicoId, setMedicoId] = useState(esMedico ? String(usuario.id) : '')
   const [horarios, setHorarios] = useState([])
   const [form, setForm] = useState({
     diaSemana: 'MONDAY',
@@ -30,10 +33,14 @@ export default function GestionHorarios() {
   const [cargando, setCargando] = useState(false)
 
   useEffect(() => {
+    if (esMedico) {
+      setMedicoId(String(usuario.id))
+      return
+    }
     medicosApi.listarMedicos()
       .then(setMedicos)
       .catch((err) => setError(extraerMensajeError(err, 'No se pudieron cargar los medicos')))
-  }, [])
+  }, [esMedico, usuario?.id])
 
   const cargarHorarios = (id) => {
     if (!id) return
@@ -50,8 +57,9 @@ export default function GestionHorarios() {
   const actualizar = (campo) => (e) => setForm({ ...form, [campo]: e.target.value })
 
   const validarFormulario = () => {
-    if (!medicoId) {
-      setError('Seleccione un medico antes de agregar el horario')
+    const idMedico = parseInt(medicoId, 10)
+    if (!medicoId || Number.isNaN(idMedico) || idMedico <= 0) {
+      setError('Seleccione un medico valido antes de agregar el horario')
       return false
     }
     if (form.horaFin <= form.horaInicio) {
@@ -108,21 +116,23 @@ export default function GestionHorarios() {
 
   return (
     <div className="container">
-      <h2>Horarios por medico</h2>
+      <h2>{esMedico ? 'Mis horarios' : 'Horarios por medico'}</h2>
       {error && <p className="mensaje-error">{error}</p>}
       {mensaje && <p className="mensaje-ok">{mensaje}</p>}
 
-      <div className="card">
-        <label>Medico</label>
-        <select value={medicoId} onChange={(e) => setMedicoId(e.target.value)}>
-          <option value="">Seleccione un medico...</option>
-          {medicos.map((m) => (
-            <option key={m.id} value={m.id}>
-              {m.nombre} {m.apellido} — {m.especialidadNombre}
-            </option>
-          ))}
-        </select>
-      </div>
+      {!esMedico && (
+        <div className="card">
+          <label>Medico</label>
+          <select value={medicoId} onChange={(e) => setMedicoId(e.target.value)}>
+            <option value="">Seleccione un medico...</option>
+            {medicos.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.nombre} {m.apellido} — {m.especialidadNombre}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {medicoId && (
         <>
@@ -153,7 +163,9 @@ export default function GestionHorarios() {
           <div className="card">
             <h3>Horarios registrados</h3>
             {cargando && <p>Cargando...</p>}
-            {!cargando && horarios.length === 0 && <p>Este medico no tiene horarios configurados.</p>}
+            {!cargando && horarios.length === 0 && (
+              <p>{esMedico ? 'Aun no tienes horarios configurados.' : 'Este medico no tiene horarios configurados.'}</p>
+            )}
             {horarios.length > 0 && (
               <table>
                 <thead>

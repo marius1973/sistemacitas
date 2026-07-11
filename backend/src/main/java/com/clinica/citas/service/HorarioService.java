@@ -29,6 +29,9 @@ public class HorarioService {
     private final SecurityContextHelper securityContextHelper;
 
     public HorarioResponse crear(HorarioRequest req) {
+        if (req.getMedicoId() == null) {
+            throw new IllegalArgumentException("El medico es obligatorio");
+        }
         verificarGestionHorarios(req.getMedicoId());
 
         if (!req.getHoraFin().isAfter(req.getHoraInicio())) {

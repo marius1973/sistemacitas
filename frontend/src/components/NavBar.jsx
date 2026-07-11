@@ -17,7 +17,10 @@ export default function NavBar() {
         <Link to="/reservar">Reservar cita</Link>
         <Link to="/mis-citas">Mis citas</Link>
       </>}
-      {usuario?.rol === 'MEDICO' && <Link to="/agenda">Mi agenda</Link>}
+      {usuario?.rol === 'MEDICO' && <>
+        <Link to="/agenda">Mi agenda</Link>
+        <Link to="/horarios">Mis horarios</Link>
+      </>}
       {usuario?.rol === 'RECEPCIONISTA' && <>
         <Link to="/monitoreo">Monitoreo</Link>
         <Link to="/horarios">Horarios</Link>
