@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <title>Evidencia Selenium — Sistema de Citas Médicas</title>
+  <style>
+    body { font-family: Segoe UI, system-ui, sans-serif; margin: 24px; color: #111; background: #f8fafc; }
+    h1,h2,h3 { color: #0f172a; }
+    .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px 20px; margin-bottom: 16px; }
+    table { border-collapse: collapse; width: 100%; background: #fff; }
+    th, td { border: 1px solid #e2e8f0; padding: 8px 10px; text-align: left; font-size: 14px; }
+    th { background: #f1f5f9; }
+    .shot img { max-width: 100%; border: 1px solid #cbd5e1; border-radius: 6px; margin-top: 8px; }
+    .muted { color: #64748b; font-size: 14px; }
+    .caso { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px 20px; margin: 16px 0; }
+  </style>
+</head>
+<body>
+  <h1>Evidencia de automatización Selenium</h1>
+  <div class="card">
+    <p><strong>Sistema:</strong> Gestión de Citas Médicas — Clínica Grupo 8</p>
+    <p><strong>URL:</strong> https://sistemacitas.vercel.app</p>
+    <p><strong>API:</strong> https://sistemacitas.vercel.app/api</p>
+    <p><strong>Herramienta:</strong> Selenium WebDriver 4 + Chrome headless</p>
+    <p><strong>Ejecución:</strong> 2026-07-12T17:27:13.903Z → 2026-07-12T17:28:08.642Z</p>
+    <p><strong>Ejecutor:</strong> MarioADM</p>
+    <p><strong>Resumen:</strong> 7 aprobado(s), 1 observado(s), 0 fallido(s)</p>
+  </div>
+  <h2>Matriz de resultados</h2>
+  <table>
+    <thead><tr><th>ID</th><th>RF</th><th>Caso</th><th>Estado</th><th>ms</th></tr></thead>
+    <tbody>
+      <tr><td>CP01</td><td>RF01</td><td>Registro exitoso de paciente</td><td>APROBADO</td><td>3766</td></tr><tr><td>CP02</td><td>RF02</td><td>Inicio de sesión con credenciales inválidas</td><td>APROBADO</td><td>4089</td></tr><tr><td>CP03</td><td>RF03</td><td>Listado de especialidades existentes</td><td>APROBADO</td><td>4335</td></tr><tr><td>CP04</td><td>RF04</td><td>Consulta de disponibilidad sin bloques configurados</td><td>OBSERVADO</td><td>10243</td></tr><tr><td>CP05</td><td>RF05</td><td>Reserva de cita en horario disponible</td><td>APROBADO</td><td>7236</td></tr><tr><td>CP06</td><td>RF05, RNF05</td><td>Intento de reserva simultánea sobre el mismo horario</td><td>APROBADO</td><td>4212</td></tr><tr><td>CP07</td><td>RF06</td><td>Cancelación de una cita pendiente</td><td>APROBADO</td><td>5940</td></tr><tr><td>CP08</td><td>RF07</td><td>Reprogramación a un horario fuera de disponibilidad</td><td>APROBADO</td><td>9635</td></tr>
+    </tbody>
+  </table>
+  <h2>Detalle y capturas</h2>
+  
+<section class="caso">
+  <h3>CP01 — Registro exitoso de paciente <span style="color:#166534">[APROBADO]</span></h3>
+  <p><strong>RF:</strong> RF01 · <strong>Módulo:</strong> Autenticación / Registro · <strong>Tipo:</strong> UI (Selenium)</p>
+  <p><strong>Objetivo:</strong> Verificar que un paciente nuevo pueda crear su cuenta con datos válidos y obtener acceso inmediato.</p>
+  <p><strong>Esperado:</strong> El sistema crea la cuenta, inicia sesión automáticamente y muestra la bienvenida al paciente.</p>
+  <p><strong>Obtenido:</strong> APROBADO (3766 ms)</p>
+  
+  <div class="shot"><img src="capturas/CP01_resultado.png" alt="CP01"/></div>
+</section>
+
+<section class="caso">
+  <h3>CP02 — Inicio de sesión con credenciales inválidas <span style="color:#166534">[APROBADO]</span></h3>
+  <p><strong>RF:</strong> RF02 · <strong>Módulo:</strong> Autenticación / Login · <strong>Tipo:</strong> UI (Selenium)</p>
+  <p><strong>Objetivo:</strong> Verificar que el sistema rechace el acceso cuando la contraseña no corresponde a la cuenta.</p>
+  <p><strong>Esperado:</strong> El sistema rechaza el acceso, permanece en /login y muestra un mensaje de error genérico.</p>
+  <p><strong>Obtenido:</strong> APROBADO (4089 ms)</p>
+  
+  <div class="shot"><img src="capturas/CP02_resultado.png" alt="CP02"/></div>
+</section>
+
+<section class="caso">
+  <h3>CP03 — Listado de especialidades existentes <span style="color:#166534">[APROBADO]</span></h3>
+  <p><strong>RF:</strong> RF03 · <strong>Módulo:</strong> Reservas / Catálogo · <strong>Tipo:</strong> UI (Selenium)</p>
+  <p><strong>Objetivo:</strong> Verificar que el paciente autenticado vea el catálogo de especialidades al reservar.</p>
+  <p><strong>Esperado:</strong> Se listan las especialidades activas (Cardiologia, Pediatria, Medicina General).</p>
+  <p><strong>Obtenido:</strong> APROBADO (4335 ms)</p>
+  
+  <div class="shot"><img src="capturas/CP03_resultado.png" alt="CP03"/></div>
+</section>
+
+<section class="caso">
+  <h3>CP04 — Consulta de disponibilidad sin bloques configurados <span style="color:#854d0e">[OBSERVADO]</span></h3>
+  <p><strong>RF:</strong> RF04 · <strong>Módulo:</strong> Reservas / Disponibilidad · <strong>Tipo:</strong> UI (Selenium) + API</p>
+  <p><strong>Objetivo:</strong> Verificar el comportamiento al consultar un día sin bloques de horario del médico.</p>
+  <p><strong>Esperado:</strong> Mensaje claro de que no hay horarios disponibles (no lista vacía silenciosa).</p>
+  <p><strong>Obtenido:</strong> OBSERVADO (10243 ms)</p>
+  <p><strong>Defecto:</strong> DEF03</p>
+  <div class="shot"><img src="capturas/CP04_resultado.png" alt="CP04"/></div>
+</section>
+
+<section class="caso">
+  <h3>CP05 — Reserva de cita en horario disponible <span style="color:#166534">[APROBADO]</span></h3>
+  <p><strong>RF:</strong> RF05 · <strong>Módulo:</strong> Reservas · <strong>Tipo:</strong> UI (Selenium)</p>
+  <p><strong>Objetivo:</strong> Verificar que el paciente pueda reservar un horario disponible.</p>
+  <p><strong>Esperado:</strong> Mensaje «Cita reservada correctamente» y cita en estado pendiente.</p>
+  <p><strong>Obtenido:</strong> APROBADO (7236 ms)</p>
+  
+  <div class="shot"><img src="capturas/CP05_resultado.png" alt="CP05"/></div>
+</section>
+
+<section class="caso">
+  <h3>CP06 — Intento de reserva simultánea sobre el mismo horario <span style="color:#166534">[APROBADO]</span></h3>
+  <p><strong>RF:</strong> RF05, RNF05 · <strong>Módulo:</strong> Reservas / Concurrencia · <strong>Tipo:</strong> API (doble sesión)</p>
+  <p><strong>Objetivo:</strong> Verificar que solo una de dos reservas simultáneas al mismo slot sea aceptada.</p>
+  <p><strong>Esperado:</strong> Una reserva confirmada y la otra rechazada por horario no disponible.</p>
+  <p><strong>Obtenido:</strong> APROBADO — Simultáneo 2026-07-13 10:30:00: HTTP 200/409 → aceptadas=1 (4212 ms)</p>
+  <p><strong>Defecto:</strong> DEF01</p>
+  <p class="muted">Sin captura (caso API o sin driver).</p>
+</section>
+
+<section class="caso">
+  <h3>CP07 — Cancelación de una cita pendiente <span style="color:#166534">[APROBADO]</span></h3>
+  <p><strong>RF:</strong> RF06 · <strong>Módulo:</strong> Mis citas · <strong>Tipo:</strong> UI (Selenium)</p>
+  <p><strong>Objetivo:</strong> Verificar que el paciente pueda cancelar una cita pendiente (CP05).</p>
+  <p><strong>Esperado:</strong> Estado CANCELADA visible en Mis citas.</p>
+  <p><strong>Obtenido:</strong> APROBADO (5940 ms)</p>
+  
+  <div class="shot"><img src="capturas/CP07_resultado.png" alt="CP07"/></div>
+</section>
+
+<section class="caso">
+  <h3>CP08 — Reprogramación a un horario fuera de disponibilidad <span style="color:#166534">[APROBADO]</span></h3>
+  <p><strong>RF:</strong> RF07 · <strong>Módulo:</strong> Mis citas / Reprogramación · <strong>Tipo:</strong> UI (Selenium) + API</p>
+  <p><strong>Objetivo:</strong> Verificar que no se permita reprogramar a un horario fuera de los bloques del médico.</p>
+  <p><strong>Esperado:</strong> La API rechaza 19:00 y la UI no ofrece ese horario.</p>
+  <p><strong>Obtenido:</strong> APROBADO (9635 ms)</p>
+  <p><strong>Defecto:</strong> DEF02</p>
+  <div class="shot"><img src="capturas/CP08_resultado.png" alt="CP08"/></div>
+</section>
+</body>
+</html>
