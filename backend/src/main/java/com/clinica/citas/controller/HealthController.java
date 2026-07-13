@@ -12,7 +12,7 @@ import java.util.Map;
 public class HealthController {
 
     /** Marcador para verificar que Render desplego el backend actualizado. */
-    public static final String BUILD_MARKER = "allow-dup-email-2026-07-12";
+    public static final String BUILD_MARKER = "fix-403-jwt-dup-email-2026-07-12";
 
     @GetMapping("/health")
     public ResponseEntity<Map<String, String>> health() {

@@ -2,19 +2,20 @@ package com.clinica.citas.repository;
 
 import com.clinica.citas.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     /**
-     * Temporal: con emails duplicados permitidos, toma el usuario mas reciente.
-     * Volver a findByEmail simple cuando se reactive UNIQUE.
+     * Temporal: con emails duplicados, usa el usuario mas reciente.
+     * Preferir metodo Spring Data (no native query) para mapear bien herencia JOINED.
      */
-    @Query(value = "SELECT * FROM usuarios WHERE email = :email ORDER BY id DESC LIMIT 1", nativeQuery = true)
-    Optional<Usuario> findByEmail(@Param("email") String email);
+    Optional<Usuario> findFirstByEmailOrderByIdDesc(String email);
+
+    default Optional<Usuario> findByEmail(String email) {
+        return findFirstByEmailOrderByIdDesc(email);
+    }
 
     boolean existsByEmail(String email);
 }
