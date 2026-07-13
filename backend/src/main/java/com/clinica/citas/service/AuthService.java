@@ -31,9 +31,6 @@ public class AuthService {
 
     public AuthResponse registrarPaciente(RegistroPacienteRequest req) {
         req.setEmail(normalizarEmail(req.getEmail()));
-       /*  if (usuarioRepository.existsByEmail(req.getEmail())) {
-            throw new IllegalArgumentException("El email ya esta registrado");
-        } */
         Paciente paciente = new Paciente();
         paciente.setNombre(req.getNombre());
         paciente.setApellido(req.getApellido());
