@@ -11,9 +11,13 @@ import com.clinica.citas.security.SecurityContextHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +48,13 @@ public class AuthService {
         paciente.setDireccion(req.getDireccion());
 
         Paciente guardado = pacienteRepository.save(paciente);
-        String token = jwtService.generarToken(usuarioDetailsService.loadUserByUsername(guardado.getEmail()));
+        // Usar el usuario recien guardado (evita NonUniqueResultException si hay emails duplicados)
+        UserDetails userDetails = new User(
+                guardado.getEmail(),
+                guardado.getPasswordHash(),
+                List.of(new SimpleGrantedAuthority("ROLE_" + guardado.getRol().name()))
+        );
+        String token = jwtService.generarToken(userDetails);
         return new AuthResponse(token, guardado.getRol().name(), guardado.getId(), guardado.getNombre());
     }
 

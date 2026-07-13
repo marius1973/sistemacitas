@@ -11,8 +11,15 @@ import java.util.Map;
 @RequestMapping("/api")
 public class HealthController {
 
+    /** Marcador para verificar que Render desplego el backend actualizado. */
+    public static final String BUILD_MARKER = "allow-dup-email-2026-07-12";
+
     @GetMapping("/health")
     public ResponseEntity<Map<String, String>> health() {
-        return ResponseEntity.ok(Map.of("status", "ok"));
+        return ResponseEntity.ok(Map.of(
+                "status", "ok",
+                "build", BUILD_MARKER,
+                "emailUniqueCheck", "disabled"
+        ));
     }
 }
